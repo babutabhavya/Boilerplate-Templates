@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "users",
     "utils",
     "django_extensions",
+    "baton.autodiscover",
 ]
 
 MIDDLEWARE = [

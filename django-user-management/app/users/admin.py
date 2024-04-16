@@ -22,8 +22,6 @@ class DRFUserAdmin(UserAdmin, BaseAuthAdmin):
                     "baton-tab-fs-verification",
                     "baton-tab-fs-permissions",
                     "baton-tab-fs-importantdates",
-                    "baton-tab-group-fs-profileimages--inline-profileimage_set",
-                    "baton-tab-group-fs-bannerimages--inline-bannerimage_set",
                 ),
             },
         ),
@@ -35,8 +33,6 @@ class DRFUserAdmin(UserAdmin, BaseAuthAdmin):
                     "is_secondary_email_verified",
                     "is_mobile_verified",
                     "is_secondary_mobile_verified",
-                    "ml_verified",
-                    "promoted",
                 ),
                 "classes": ("tab-fs-verification",),
                 "description": "This is another description text",
@@ -62,22 +58,6 @@ class DRFUserAdmin(UserAdmin, BaseAuthAdmin):
                 "fields": ("last_login", "date_joined", "update_date", "last_active"),
                 "classes": ("tab-fs-importantdates",),
                 "description": "Important dates related information",
-            },
-        ),
-        (
-            "Profile Images",
-            {
-                "fields": (),
-                "classes": ("tab-fs-profileimages",),
-                "description": "The users profiles images",
-            },
-        ),
-        (
-            "Banner Images",
-            {
-                "fields": (),
-                "classes": ("tab-fs-bannerimages",),
-                "description": "The users banner images",
             },
         ),
     )
