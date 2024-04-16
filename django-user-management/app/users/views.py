@@ -175,7 +175,7 @@ class OTPValidationView(BaseAuthView):
                 self.update_user_secondary_mobile_verification(user)
         if secondary_email:
             if not validate_otp(secondary_email, otp):
-                raise serializers.ValidationError(_("Invalid OTP for secondary email."))
+                raise serializers.ValidationError("Invalid OTP for secondary email.")
             if user:
                 self.update_user_secondary_email_verification(user)
         return user
