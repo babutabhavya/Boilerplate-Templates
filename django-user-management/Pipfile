@@ -15,8 +15,13 @@ faker = "*"
 pillow = "*"
 django-cors-headers = "*"
 django-baton = "*"
+gunicorn = "*"
 
 [dev-packages]
+black = "*"
+isort = "*"
+pylint = "*"
+pylint-django = "*"
 
 [requires]
 python_version = "3.11"

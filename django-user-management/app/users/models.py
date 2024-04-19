@@ -1,13 +1,13 @@
+from django.contrib.auth import get_user_model
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import Group, PermissionsMixin
 from django.db import models
 from django.forms import ValidationError
 from django.utils.text import gettext_lazy as _
+from django_extensions.db.fields import AutoSlugField
 
 from .managers import UserManager
 from .variables import DESTINATION_CHOICES, EMAIL
-from django.contrib.auth import get_user_model
-from django_extensions.db.fields import AutoSlugField
 
 
 class User(AbstractBaseUser, PermissionsMixin):

@@ -1,6 +1,7 @@
 """
 Custom backends to facilitate authorizations
 """
+
 import re
 
 from django.contrib.auth import get_user_model

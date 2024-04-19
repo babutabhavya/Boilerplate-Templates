@@ -12,7 +12,6 @@ from users.utils import update_user_settings
 from utils.exceptions import NotFoundException
 from utils.notifications import sms_client
 
-
 user_settings: Dict[str, Union[bool, Dict[str, Union[int, str, bool]]]] = (
     update_user_settings()
 )

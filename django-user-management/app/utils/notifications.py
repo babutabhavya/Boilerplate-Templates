@@ -3,8 +3,6 @@ from abc import ABC, abstractmethod
 
 import boto3
 
-from project.logger import logger
-
 
 class NotificationClient(ABC):
     @abstractmethod

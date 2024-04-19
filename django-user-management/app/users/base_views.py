@@ -1,6 +1,7 @@
 import re
 from typing import Dict
 
+from django.contrib.auth import get_user_model
 from django.http import HttpRequest
 from django.utils import timezone
 from rest_framework import status
@@ -10,7 +11,6 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.utils import datetime_from_epoch
 from utils.authentication import get_client_ip, send_otp
 from utils.exceptions import BadRequestException
-from django.contrib.auth import get_user_model
 
 from .models import AuthTransaction, OTPValidation
 from .serializers import UserSerializer

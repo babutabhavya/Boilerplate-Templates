@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth.admin import Group
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from faker import Faker
@@ -12,7 +13,6 @@ from users.base_views import BaseAuthView
 from utils.authentication import generate_otp_request, validate_otp
 from utils.exception_handling import api_exception_handling
 from utils.exceptions import BadRequestException
-from django.contrib.auth.admin import Group
 
 from .models import (
     AuthTransaction,

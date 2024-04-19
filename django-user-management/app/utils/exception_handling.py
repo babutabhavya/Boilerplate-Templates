@@ -3,7 +3,6 @@ from rest_framework.exceptions import AuthenticationFailed, ValidationError
 from rest_framework.response import Response
 from utils.exceptions import BadRequestException, NotFoundException
 
-
 from utils.exceptions import ForbiddenException  # isort: skip
 
 
