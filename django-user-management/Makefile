@@ -7,7 +7,7 @@ PIPENV_RUN := pipenv run
 BLACK_CMD := $(PIPENV_RUN) black $(BACKEND_DIR) --exclude='migrations' --skip-string-normalization
 ISORT_CMD := $(PIPENV_RUN) isort $(APP_DIR)/**/* --filter-files --profile black
 PYLINT_CMD := $(PIPENV_RUN) pylint $(APP_DIR) --load-plugins pylint_django --django-settings-module=app
-GUNICORN_CMD := $(PIPENV_RUN) gunicorn $(APP_DIR).wsgi -c $(BACKEND_DIR)/../gunicorn_config.py --env DJANGO_DEVELOPMENT=true --reload
+GUNICORN_CMD := $(PIPENV_RUN) gunicorn app.wsgi -c $(BACKEND_DIR)/../gunicorn_config.py --env DJANGO_DEVELOPMENT=true --reload
 
 # Backend tasks
 check-format:
