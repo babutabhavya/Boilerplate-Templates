@@ -3,7 +3,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.sites.models import Site
 from django.utils.text import gettext_lazy as _
 
-from .models import *
+from .models import AuthTransaction, OTPValidation, User
 
 
 class BaseAuthAdmin:  # pylint: disable=R0903

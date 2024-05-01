@@ -1,8 +1,6 @@
 # pylint: disable=R0903
 from abc import ABC, abstractmethod
 
-import boto3
-
 
 class NotificationClient(ABC):
     @abstractmethod

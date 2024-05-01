@@ -168,8 +168,8 @@ class OTPLoginSerializer(BaseAuthSerializer):
         user = None
         try:
             user = get_user_model().objects.get(mobile=attrs.get("destination"))
-        except get_user_model().DoesNotExist:
-            raise serializers.ValidationError("User not found")
+        except get_user_model().DoesNotExist as error:
+            raise serializers.ValidationError("User not found") from error
         attrs["user"] = user
         return attrs
 
@@ -330,10 +330,10 @@ class OTPValidationSerializer(serializers.Serializer):
                 query = {"mobile": mobile}
             db_user = get_user_model().objects.filter(**query).first()
 
-            if not db_user:
-                raise serializers.ValidationError(_("User does not exist."))
-            else:
+            if db_user:
                 attrs["db_user"] = db_user
+            else:
+                raise serializers.ValidationError(_("User does not exist."))
 
         if user:
             if email:

@@ -15,9 +15,9 @@ class BaseAuthSerializer(serializers.Serializer):
             del kwargs["raise_exception"]
         try:
             return User.objects.get(**kwargs)
-        except User.DoesNotExist:
+        except User.DoesNotExist as error:
             if raise_exception:
-                raise NotFoundException("User does not exists")
+                raise NotFoundException("User does not exists") from error
             return None
 
     def get_destination_prop(self, attrs: dict):

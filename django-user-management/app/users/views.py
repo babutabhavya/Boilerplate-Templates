@@ -3,7 +3,7 @@ from django.contrib.auth.admin import Group
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from faker import Faker
-from rest_framework import status, views, viewsets
+from rest_framework import status, views
 from rest_framework.permissions import AllowAny, BasePermission, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
@@ -14,13 +14,7 @@ from utils.authentication import generate_otp_request, validate_otp
 from utils.exception_handling import api_exception_handling
 from utils.exceptions import BadRequestException
 
-from .models import (
-    AuthTransaction,
-    BannerImage,
-    ProfileImage,
-    SelectedBannerImage,
-    SelectedProfileImage,
-)
+from .models import AuthTransaction
 from .serializers import *
 from .variables import EMAIL, MOBILE
 
@@ -207,7 +201,7 @@ class CustomTokenRefreshView(TokenRefreshView):
         try:
             serializer.is_valid(raise_exception=True)
         except TokenError as error:
-            raise InvalidToken(error.args[0])
+            raise InvalidToken(error.args[0]) from error
 
         token = serializer.validated_data.get("access")
 
@@ -278,9 +272,9 @@ class UpdateContactInfoInit(BaseAuthView):
         if email:
             otp_obj = generate_otp_request(EMAIL, email)
             return self.send_otp(email, otp_obj)
-        else:
-            otp_obj = generate_otp_request(MOBILE, mobile)
-            return self.send_otp(mobile, otp_obj)
+
+        otp_obj = generate_otp_request(MOBILE, mobile)
+        return self.send_otp(mobile, otp_obj)
 
 
 class UpdateContactInfoConfirm(BaseAuthView):
@@ -332,84 +326,9 @@ class UserProfileUpdateAPIView(views.APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class IsOwner(BasePermission):
     def has_object_permission(self, request, view, obj):
         return obj.user == request.user
-
-
-class ProfileImageBannerImageBaseViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated, IsOwner]
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user, image_type=ProfileImage.UPLOADED)
-
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        self.check_object_permissions(request, instance)
-        self.perform_destroy(instance)
-        return Response(status=204)
-
-    def list(self, request, *args, **kwargs):
-        return Response(status=405)
-
-    def retrieve(self, request, *args, **kwargs):
-        return Response(status=405)
-
-    def update(self, request, *args, **kwargs):
-        return Response(status=405)
-
-    def partial_update(self, request, *args, **kwargs):
-        return Response(status=405)
-
-
-class ProfileImageViewSet(ProfileImageBannerImageBaseViewSet):
-    queryset = ProfileImage.objects.all()
-    serializer_class = ProfileImageSerializer
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user, image_type=ProfileImage.UPLOADED)
-
-
-class ProfileBannerImageViewSet(ProfileImageBannerImageBaseViewSet):
-    queryset = BannerImage.objects.all()
-    serializer_class = BannerImageSerializer
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user, image_type=BannerImage.UPLOADED)
-
-
-class ChangeSelectedProfileImagBannerBaseView(views.APIView):
-    def put(self, request, pk):
-        user = request.user
-        try:
-            image = self.images_model.objects.get(pk=pk)
-        except self.images_model.DoesNotExist:
-            return Response(
-                {"error": "Invalid profile image."}, status=status.HTTP_400_BAD_REQUEST
-            )
-        try:
-            selected_image = self.model.objects.get(user=user)
-            selected_image.image = image
-        except self.model.DoesNotExist:
-            selected_image = self.model.objects.create(user=user, image=image)
-
-        selected_image.save()
-
-        serializer = self.serializer_class(selected_image)
-        return Response(serializer.data)
-
-
-class ChangeSelectedProfileImageView(ChangeSelectedProfileImagBannerBaseView):
-    model = SelectedProfileImage
-    images_model = ProfileImage
-    serializer_class = SelectedProfileImageSerializer
-
-
-class ChangeSelectedProfileBannerImageView(ChangeSelectedProfileImagBannerBaseView):
-    model = SelectedBannerImage
-    images_model = BannerImage
-    serializer_class = SelectedProfileBannerImageSerializer
