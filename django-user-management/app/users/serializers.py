@@ -187,15 +187,18 @@ class RegisterSerializer(serializers.Serializer):
             if user.email != email:
                 raise serializers.ValidationError(
                     _(
-                        f"Your account is registered with {user.mobile} and does not have {email} as the registered email. Please login directly via OTP with your mobile."
+                        f"Your account is registered with {user.mobile} and does not have {email} "
+                        f"as the registered email. Please login directly via OTP with your mobile."
                     )
                 )
             if mobile and user.mobile != mobile:
                 raise serializers.ValidationError(
                     _(
-                        f"Your account is registered with {user.email} and does not have {mobile} as the registered mobile. Please login directly via OTP with your email."
+                        f"Your account is registered with {user.email} and does not have {mobile} "
+                        f"as the registered mobile. Please login directly via OTP with your email."
                     )
                 )
+
         return user
 
     def validate_mobile(self, mobile):

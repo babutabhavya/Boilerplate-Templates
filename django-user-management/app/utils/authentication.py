@@ -48,7 +48,8 @@ def generate_otp_request(prop, destination):
     #     ):
     #         raise BadRequestException(
     #             _(
-    #                 f"Please request for an OTP after {round((otp_object.reactive_at-timezone.now()).total_seconds())} seconds"
+    #                 f"Please request for an OTP after "
+    #                 f"{round((otp_object.reactive_at - timezone.now()).total_seconds())} seconds"
     #             )
     #         )
 
@@ -96,10 +97,8 @@ def send_otp(value: str, otp: OTPValidation) -> Dict:
         try:
             sms_client.send(value, f"Your OTP for MaterialLibrary is {otp.otp}")
         except ValueError as error:
-            raise Exception(
-                _(
-                    f"Server configuration error occurred: {error}"
-                )  # pylint: disable=W0719
+            raise ValueError(
+                _(f"Server configuration error occurred: {error}")
             ) from error
     elif re.match(r"[^@]+@[^@]+\.[^@]+", value):
         print("Sending OTP", value, otp)
@@ -123,7 +122,8 @@ def validate_otp(destination: str, otp: int) -> bool:
     except OTPValidation.DoesNotExist as error:
         raise NotFoundException(
             _(
-                f"No pending OTP validation request found for provided {destination}. Kindly send an OTP first"
+                f"No pending OTP validation request found for provided {destination}. "
+                f"Kindly send an OTP first"
             )
         ) from error
     # Decrement validate_attempt

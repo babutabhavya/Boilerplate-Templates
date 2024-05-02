@@ -1,3 +1,4 @@
+# pylint: disable=W0223
 from django.core.validators import EmailValidator, ValidationError
 from rest_framework import serializers
 from utils.exceptions import NotFoundException
