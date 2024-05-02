@@ -185,8 +185,8 @@ CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
 
 
 BATON = {
-    "SITE_HEADER": "Django User Management Boilerplate",
-    "SITE_TITLE": "Django User Management Boilerplate",
+    "SITE_HEADER": "User Management Boilerplate",
+    "SITE_TITLE": "User Management Boilerplate",
     "INDEX_TITLE": "Site administration",
     "POWERED_BY": "",
     "SUPPORT_HREF": "https://linkedin.com/en/bhavyababuta",
