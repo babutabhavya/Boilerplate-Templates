@@ -35,14 +35,9 @@ class BaseAuthView(APIView):
     def login_user(self, user, request: HttpRequest) -> Dict[str, str]:
         token: RefreshToken = RefreshToken.for_user(user)
 
-        if hasattr(user, "email"):
-            token["email"] = user.email
-
-        if hasattr(user, "mobile"):
-            token["mobile"] = user.mobile
-
-        if hasattr(user, "name"):
-            token["name"] = user.name
+        for data in ["email", "mobile", "name"]:
+            if hasattr(user, data):
+                token[data] = getattr(user, data)
 
         user.last_login = timezone.now()
         user.save()
@@ -72,7 +67,7 @@ class BaseAuthView(APIView):
                 {"message": f"OTP has been sent successfully to {destination}"},
                 status=status.HTTP_201_CREATED,
             )
-        raise Exception(f"OTP failed to sent to {destination}")
+        raise Exception(f"OTP failed to sent to {destination}")  # pylint:disable=W0719
 
     def delete_otp(self, otp):
         OTPValidation.objects.filter(otp=otp).delete()

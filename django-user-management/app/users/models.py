@@ -1,4 +1,3 @@
-from django.contrib.auth import get_user_model
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import Group, PermissionsMixin
 from django.db import models
@@ -156,30 +155,3 @@ class OTPValidation(models.Model):
     class Meta:
         verbose_name = _("OTP Validation")
         verbose_name_plural = _("OTP Validations")
-
-
-class ProfileImageAndBannerImageBase(models.Model):
-    DEFAULT = "default"
-    UPLOADED = "uploaded"
-
-    IMAGE_TYPE_CHOICES = (
-        (DEFAULT, "Default"),
-        (UPLOADED, "Uploaded"),
-    )
-
-    image_type = models.CharField(
-        max_length=10, choices=IMAGE_TYPE_CHOICES, default=UPLOADED
-    )
-    user = models.ForeignKey(
-        get_user_model(), null=True, blank=True, on_delete=models.CASCADE
-    )
-
-    class Meta:
-        abstract = True
-
-
-class ProfileImage(ProfileImageAndBannerImageBase):
-    image = models.ImageField(upload_to="profile_images", verbose_name="Profile Image")
-
-    def __str__(self) -> str:
-        return f"{self.user.name}__{self.image}"

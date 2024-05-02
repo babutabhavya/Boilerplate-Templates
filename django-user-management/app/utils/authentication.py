@@ -96,7 +96,11 @@ def send_otp(value: str, otp: OTPValidation) -> Dict:
         try:
             sms_client.send(value, f"Your OTP for MaterialLibrary is {otp.otp}")
         except ValueError as error:
-            raise Exception(_(f"Server configuration error occurred: {error}"))
+            raise Exception(
+                _(
+                    f"Server configuration error occurred: {error}"
+                )  # pylint: disable=W0719
+            ) from error
     elif re.match(r"[^@]+@[^@]+\.[^@]+", value):
         print("Sending OTP", value, otp)
         # TO Send OTP email using email_client
@@ -116,12 +120,12 @@ def validate_otp(destination: str, otp: int) -> bool:
         otp_object: OTPValidation = OTPValidation.objects.get(
             destination=destination, is_validated=False
         )
-    except OTPValidation.DoesNotExist:
+    except OTPValidation.DoesNotExist as error:
         raise NotFoundException(
             _(
                 f"No pending OTP validation request found for provided {destination}. Kindly send an OTP first"
             )
-        )
+        ) from error
     # Decrement validate_attempt
     otp_object.validate_attempt -= 1
 

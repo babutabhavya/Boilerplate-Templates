@@ -8,8 +8,6 @@ from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from .base_serializers import BaseAuthSerializer, ContactInfoBaseSerializer
-from .models import BannerImage, ProfileImage, SelectedBannerImage, SelectedProfileImage
-from .utils import user_settings
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -84,51 +82,9 @@ class UserSerializer(serializers.ModelSerializer):
 
         return value
 
-    def validate_email(self, value: str) -> str:
-        if not user_settings["EMAIL_VALIDATION"]:
-            return value
-        return value
-
-    def validate_mobile(self, value: str) -> str:
-        if not user_settings["MOBILE_VALIDATION"]:
-            return value
-        return value
-
     def validate_password(self, value: str) -> str:
         validate_password(value)
         return value
-
-    def get_profile_image_banner_image(self, obj, images_model, selected_image_model):
-        user_uploaded_images = images_model.objects.filter(user=obj)
-        default_images = images_model.objects.filter(user=None)
-        images = user_uploaded_images.union(default_images)
-
-        selected_images = selected_image_model.objects.filter(user=obj).values_list(
-            "image_id", flat=True
-        )
-
-        profile_images = []
-        for image in images:
-            profile_image = {
-                "id": image.id,
-                "image": image.image.url,
-                "image_type": image.image_type,
-                "is_selected": image.id in selected_images,
-                "is_solid": image.is_solid if images_model == BannerImage else False,
-            }
-            profile_images.append(profile_image)
-
-        return profile_images
-
-    def get_profile_images(self, obj):
-        return self.get_profile_image_banner_image(
-            obj, ProfileImage, SelectedProfileImage
-        )
-
-    def get_banner_images(self, obj):
-        return self.get_profile_image_banner_image(
-            obj, BannerImage, SelectedBannerImage
-        )
 
     class Meta:
         model = get_user_model()
@@ -147,8 +103,7 @@ class UserSerializer(serializers.ModelSerializer):
             "last_active",
             "last_login",
             "slug",
-            "banner_images",
-            "profile_images",
+            "profile_image",
         )
         read_only_fields = ("is_superuser", "is_staff")
         extra_kwargs = {"password": {"write_only": True}}
@@ -183,14 +138,9 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         token = super().get_token(user)
 
         # Add custom claims
-        if hasattr(user, "email"):
-            token["email"] = user.email
-
-        if hasattr(user, "mobile"):
-            token["mobile"] = user.mobile
-
-        if hasattr(user, "name"):
-            token["name"] = user.name
+        for data in ["email", "mobile", "name"]:
+            if hasattr(user, data):
+                token[data] = getattr(user, data)
 
         return token
 
@@ -206,12 +156,12 @@ class OTPSerializer(BaseAuthSerializer):
             if attrs["prop"] == "E":
                 try:
                     self.get_user(email=destination, raise_exception=True)
-                except:
+                except get_user_model().DoesNotExist:
                     self.get_user(secondary_email=destination, raise_exception=True)
             else:
                 try:
                     self.get_user(mobile=destination, raise_exception=True)
-                except:
+                except get_user_model().DoesNotExist:
                     self.get_user(secondary_mobile=destination, raise_exception=True)
         return attrs
 
@@ -295,7 +245,7 @@ class OTPValidationSerializer(serializers.Serializer):
             raise serializers.ValidationError("Invalid secondary email address.")
         return secondary_email
 
-    def validate(self, attrs):
+    def validate(self, attrs):  # pylint: disable=R0912
         email = attrs.get("email")
         mobile = attrs.get("mobile")
         secondary_mobile = attrs.get("secondary_mobile")
@@ -386,31 +336,3 @@ class ContactInfoUpdateConfirmSerializer(ContactInfoBaseSerializer):
             )
 
         return attrs
-
-
-class ProfileImageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ProfileImage
-        fields = ("id", "image", "image_type", "user")
-
-
-class BannerImageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = BannerImage
-        fields = ("id", "image", "image_type", "user")
-
-
-class SelectedProfileImageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = SelectedProfileImage
-        fields = ["id", "image"]
-
-    image = serializers.PrimaryKeyRelatedField(queryset=ProfileImage.objects.all())
-
-
-class SelectedProfileBannerImageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = SelectedBannerImage
-        fields = ["id", "image"]
-
-    image = serializers.PrimaryKeyRelatedField(queryset=BannerImage.objects.all())

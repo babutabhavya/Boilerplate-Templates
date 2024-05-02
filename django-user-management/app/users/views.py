@@ -3,8 +3,8 @@ from django.contrib.auth.admin import Group
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from faker import Faker
-from rest_framework import status, views
-from rest_framework.permissions import AllowAny, BasePermission, IsAuthenticated
+from rest_framework import serializers, status, views
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from rest_framework_simplejwt.settings import api_settings
@@ -15,7 +15,17 @@ from utils.exception_handling import api_exception_handling
 from utils.exceptions import BadRequestException
 
 from .models import AuthTransaction
-from .serializers import *
+from .serializers import (
+    ContactInfoUpdateConfirmSerializer,
+    ContactInfoUpdateInitSerializer,
+    CustomTokenObtainPairSerializer,
+    OTPLoginSerializer,
+    OTPSerializer,
+    OTPValidationSerializer,
+    PasswordResetSerializer,
+    RegisterSerializer,
+    UserSerializer,
+)
 from .variables import EMAIL, MOBILE
 
 
@@ -54,6 +64,10 @@ class LoginOTPView(BaseAuthView):
                 data=self.login_user(user, self.request),
                 status=status.HTTP_200_OK,
             )
+        return Response(
+            data="Something went wrong",
+            status=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        )
 
 
 class OTPView(BaseAuthView):  # pylint:disable=R0903
@@ -143,7 +157,7 @@ class OTPValidationView(BaseAuthView):
         user.is_secondary_email_verified = secondary_email_verified
         user.save()
 
-    def validate_otp_combinations(
+    def validate_otp_combinations(  # pylint: disable=R0913
         self,
         user,
         otp,
@@ -195,8 +209,9 @@ class OTPValidationView(BaseAuthView):
 
 
 class CustomTokenRefreshView(TokenRefreshView):
+
     @api_exception_handling
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         try:
             serializer.is_valid(raise_exception=True)
@@ -327,8 +342,3 @@ class UserProfileUpdateAPIView(views.APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class IsOwner(BasePermission):
-    def has_object_permission(self, request, view, obj):
-        return obj.user == request.user

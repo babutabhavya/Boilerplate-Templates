@@ -14,7 +14,9 @@ class NotificationFactory:
         types = {"email": EmailClient, "sms": SMSClient}
         cls = types.get(notification_type)
         if not cls:
-            raise Exception("Invalid notification type passed to notification factory")
+            raise Exception(  # pylint:disable=W0719
+                "Invalid notification type passed to notification factory"
+            )
         return cls()
 
 
