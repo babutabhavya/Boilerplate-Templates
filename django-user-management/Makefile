@@ -36,7 +36,7 @@ lint:
 	$(PYLINT_CMD)
 
 run-dev:
-	cd $(APP_DIR) && DJANGO_DEVELOPMENT=true && $(GUNICORN_CMD)
+	docker-compose up
 
 run-production:
 	cd $(APP_DIR) && DJANGO_DEVELOPMENT=false $(GUNICORN_CMD)
