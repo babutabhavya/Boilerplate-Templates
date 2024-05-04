@@ -18,7 +18,10 @@ Including another URLconf
 from baton.autodiscover import admin
 from django.urls import include, path
 
+# to serve the static files with gunicorn
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("baton/", include("baton.urls")),
-]
+] + staticfiles_urlpatterns()
