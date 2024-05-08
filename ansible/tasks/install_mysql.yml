@@ -1,0 +1,38 @@
+- name: Install MySQL
+  apt:
+    name: mysql-server
+    state: present
+
+- name: Set MySQL root password and create a user and database
+  mysql_user:
+    name: root
+    password: "{{ mysql_root_password }}"
+    login_user: root
+    login_password: ""
+    check_implicit_admin: yes
+    priv: "*.*:ALL,GRANT"
+    state: present
+  vars_prompt:
+    - name: mysql_root_password
+      prompt: "Enter MySQL root password:"
+      private: yes
+
+- name: Create MySQL user and database
+  mysql_db:
+    name: "{{ mysql_database }}"
+    state: present
+  vars_prompt:
+    - name: mysql_database
+      prompt: "Enter MySQL database name:"
+    - name: mysql_user
+      prompt: "Enter MySQL username for the new user:"
+    - name: mysql_user_password
+      prompt: "Enter MySQL password for the new user:"
+      private: yes
+
+- name: Grant privileges on the database to the new user
+  mysql_user:
+    name: "{{ mysql_user }}"
+    password: "{{ mysql_user_password }}"
+    priv: "{{ mysql_database }}.*:ALL"
+    state: present

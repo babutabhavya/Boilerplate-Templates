@@ -1,0 +1,78 @@
+- name: Update apt cache and install essential
+  hosts: all
+  gather_facts: no
+  become: true
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+    - name: Install build-essential
+      apt:
+        name: build-essential
+        state: present
+
+
+- name: Install Python 3.11
+  hosts: all
+  gather_facts: no
+  vars_prompt:
+    - name: install_python
+      prompt: "Do you want to install Python 3.11? (yes/no)"
+      private: no
+
+  tasks:
+    - name: "Install Python and Pipenv"
+      include_tasks: tasks/install_python_and_pipenv.yml
+      when: install_python == "yes"
+
+- name: Install Node.js and npm
+  hosts: all
+  gather_facts: no
+  vars_prompt:
+    - name: install_node
+      prompt: "Do you want to install Node.js and npm? (yes/no)"
+      private: no
+
+  tasks:
+    - name: "Install Node.js and npm"
+      include_tasks: tasks/install_node_and_npm.yml
+      when: install_node == "yes"
+
+- name: Install Nginx
+  hosts: all
+  gather_facts: no
+  vars_prompt:
+    - name: install_nginx
+      prompt: "Do you want to install Nginx? (yes/no)"
+      private: no
+
+  tasks:
+    - name: "Install Nginx"
+      include_tasks: tasks/install_nginx.yml
+      when: install_nginx == "yes"
+
+- name: Install MySQL
+  hosts: all
+  gather_facts: no
+  vars_prompt:
+    - name: install_mysql
+      prompt: "Do you want to install MySQL? (yes/no)"
+      private: no
+
+  tasks:
+    - name: "Install MySQL"
+      include_tasks: tasks/install_mysql.yml
+      when: install_mysql == "yes"
+
+- name: Install MongoDB
+  hosts: all
+  gather_facts: no
+  vars_prompt:
+    - name: install_mongodb
+      prompt: "Do you want to install MongoDB? (yes/no)"
+      private: no
+
+  tasks:
+    - name: "Install MongoDB"
+      include_tasks: tasks/install_mongodb.yml
+      when: install_mongodb == "yes"

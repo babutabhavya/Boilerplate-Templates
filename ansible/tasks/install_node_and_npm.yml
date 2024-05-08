@@ -1,0 +1,17 @@
+- name: Install nodejs and npm
+  become: true
+  apt:
+    pkg:
+      - nodejs
+
+- name: Install "n" node.js package globally.
+  become: true
+  community.general.npm:
+    name: n
+    global: true
+
+- name: Change n to latest
+  become: true
+  become_user: root
+  shell: |
+    n latest
